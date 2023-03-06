@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Distance Calculator</title>
+  <script th:src="@{/webjars/jquery/3.6.0/jquery.min.js}"></script>
+  <script th:src="@{/webjars/bootstrap/5.1.0/js/bootstrap.bundle.min.js}"></script>
+  <link th:href="@{/webjars/bootstrap/5.1.0/css/bootstrap.min.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container mt-4">
+  <h1 class="mb-4">Distance Calculator</h1>
+  <div class="row">
+    <div class="col-md-6">
+      <h2>Select Coordinates:</h2>
+      <form id="select-coordinates-form">
+        <div class="form-group">
+          <label for="select-c1">Select Coordinate 1:</label>
+          <select class="form-control" id="select-c1" name="c1">
+            <option selected disabled>Select a coordinate</option>
+            <th:block th:each="coordinate : ${coordinates}">
+              <option th:value="${coordinate}" th:text="${coordinate}"></option>
+            </th:block>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="select-c2">Select Coordinate 2:</label>
+          <select class="form-control" id="select-c2" name="c2">
+            <option selected disabled>Select a coordinate</option>
+            <th:block th:each="coordinate : ${coordinates}">
+              <option th:value="${coordinate}" th:text="${coordinate}"></option>
+            </th:block>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Calculate Distance</button>
+      </form>
+    </div>
+    <div class="col-md-6">
+      <h2>Result:</h2>
+      <div id="result"></div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(function () {
+    $('#select-coordinates-form').submit(function (event) {
+      event.preventDefault();
+      const c1 = $('#select-c1').val();
+      const c2 = $('#select-c2').val();
+      calculateDistance(c1, c2);
+    });
+  });
+
+  function calculateDistance(c1, c2) {
+    fetch('/coordinates/distance', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({c1, c2})
+    })
+            .then(response => response.json())
+            .then(distance => {
+              const result = document.getElementById('distance');
+              result.innerText = `Distance: ${distance} km`;
+            });
+  }
+</script>
+</body>
+</html>
